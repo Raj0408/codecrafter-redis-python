@@ -10,8 +10,13 @@ def main():
     con , addr = server_socket.accept() # wait for client
     print("Connected by ",addr)
     with con:
-        con.recv(1024)
-        con.send(ping.encode())
+        while True:
+            data = con.recv(1024)
+            if not data:
+                break
+            else:
+                print("Received: ",data.decode())
+                con.send(ping.encode())
 
 if __name__ == "__main__":
     main()
