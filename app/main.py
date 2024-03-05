@@ -47,11 +47,10 @@ def handle_connection_res(con , addr):
                         flag = True
                     response = "+OK" + CRLF
                 elif vector2[0] == "get":
+                    response = "+" + myDict[vector2[1]] + CRLF
                     if(flag):
                         if (time.time_ns() - myDict["start"]) > int(myDict["expiry"]):
                             response = "-1" + CRLF
-                        else:
-                            response = "+" + myDict[vector2[1]] + CRLF
                 con.send(response.encode())
 
                 
