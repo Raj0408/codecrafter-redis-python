@@ -3,17 +3,32 @@ import socket
 import threading
 
 
+def handle_command(data):
+    if(data.startswith("echo")):
+        return data[4:]
+    else:
+        return data
+
+
 def handle_connection_res(con , addr):
-    ping = "+PONG\r\n"
+    CRLF = "\r\n"
     print("Connected by ",addr)
     with con:
+        data = ""
         while True:
-            data = con.recv(1024)
-            if not data:
+            chunk = con.recv(1024)
+            if not chunk:
                 break
             else:
-                print(f"Received from {con}: ",data.decode())
-                con.send(ping.encode())
+                vector = chunk.decode().split(CRLF)
+                print(vector)
+                if vector[2].lower() == "ping":
+                    response = "+PONG{}".format(CRLF)
+                elif vector[2].lower() == "echo":
+                    response = "+" + vector[4] + CRLF
+                con.send(response.encode())
+
+                
 
 def main():
     
