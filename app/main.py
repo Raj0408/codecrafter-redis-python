@@ -61,14 +61,16 @@ def handle_connection_res(con , addr):
 def main():
     
     print("Logs from your program will appear here!")
-    my_time = time.time_ns() * 10 ** -6
-    print(my_time)
-    cli_arg_parser = CLIArgParser()
-    args = cli_arg_parser.parse_args()
+    args = CLIArgParser().parse_args()
     port = int(args.port)
-    if port is None:
-        port = DEFAULT_PORT
-    server_socket = socket.create_server(("localhost", port))
+    try:
+        port = int(args.port)
+    except:
+        port = 6379
+
+    server_socket = socket.create_server(("localhost", port), reuse_port=True)
+ 
+    # server_socket = socket.create_server(("localhost", port))
     server_socket.listen()
     while True:
         conn , addr = server_socket.accept()
