@@ -62,7 +62,6 @@ def main():
     
     print("Logs from your program will appear here!")
     args = CLIArgParser().parse_args()
-    port = int(args.port)
     try:
         port = int(args.port)
     except:
