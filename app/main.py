@@ -26,6 +26,11 @@ def handle_connection_res(con , addr):
                     response = "+PONG{}".format(CRLF)
                 elif vector[2].lower() == "echo":
                     response = "+" + vector[4] + CRLF
+                elif vector[2].lower() == "set":
+                    myDict = {vector[4]: vector[6]}
+                    response = "+OK" + CRLF
+                elif vector[2] == "get":
+                    response = "+" + myDict[vector[4]] + CRLF
                 con.send(response.encode())
 
                 
@@ -39,13 +44,7 @@ def main():
     while True:
         conn , addr = server_socket.accept()
         thread = threading.Thread(target=handle_connection_res, args=(conn, addr))
-        thread.start()
-
-    
-    
-    
-    
-    # wait for client
-   
+        thread.start()    
+    # wait for client 
 if __name__ == "__main__":
     main()
