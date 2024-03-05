@@ -2,7 +2,8 @@
 import socket
 import threading
 import time
-import cliparse
+from app.cliparse import CLIArgParser
+
 
 myTime = time.time_ns()
 myDict = {}
@@ -62,7 +63,7 @@ def main():
     print("Logs from your program will appear here!")
     my_time = time.time_ns() * 10 ** -6
     print(my_time)
-    cli_arg_parser = cliparse.CLIArgParser()
+    cli_arg_parser = CLIArgParser()
     args = cli_arg_parser.parse_args()
     port = args.port
     if port is None:
