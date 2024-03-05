@@ -10,12 +10,17 @@ myDict = {}
 flag = False
 
 DEFAULT_PORT = 6379
+CRFL = "\r\n"
 
-def handle_command(data):
-    if(data.startswith("echo")):
-        return data[4:]
+
+def getresponce(message):
+    if len(message) == 0:
+        return "$-1"+ CRFL
     else:
-        return data
+        echoPattern = "$<len>\r\n<data>\r\n"
+        echoPattern = echoPattern.replace("<len>", str(len(message)))
+        echoPattern = echoPattern.replace("<data>", message)
+        return echoPattern
 
 
 def handle_connection_res(con , addr):
@@ -31,29 +36,27 @@ def handle_connection_res(con , addr):
                 break
             else:
                 vector = chunk.decode().split(CRLF)
-                print(vector)
                 vector2 = []
                 for x, i in enumerate(vector):
                     if (x % 2 == 0) & (x != 0):
                         vector2.append(i)
-                print(vector2)
 
                 if vector2[0].lower() == "ping":
-                    response = "+PONG{}".format(CRLF)
+                    response = getresponce("PONG")
                 elif vector2[0].lower() == "echo":
-                    response = "+" + vector2[1] + CRLF
+                    response = getresponce(vector2[1] if len(vector2)>1 else "")
                 elif vector2[0].lower() == "set": 
                     myDict = {vector2[1]: vector2[2]}
                     if len(vector2) > 4:
                         myDict["expiry"] = vector2[-1]
                         myDict["start"] = time.time_ns()
                         flag = True
-                    response = "+OK" + CRLF
+                    response = getresponce("OK")
                 elif vector2[0] == "get":
-                    response = "+" + myDict[vector2[1]] + CRLF
+                    response = getresponce(myDict[vector2[1]])
                     if(flag):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
-                            response = "$-1" + CRLF
+                            getresponce("")
                 con.send(response.encode())
 
                 
