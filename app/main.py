@@ -65,7 +65,7 @@ def main():
     print(my_time)
     cli_arg_parser = CLIArgParser()
     args = cli_arg_parser.parse_args()
-    port = args.port
+    port = int(args.port)
     if port is None:
         port = DEFAULT_PORT
     server_socket = socket.create_server(("localhost", port))
