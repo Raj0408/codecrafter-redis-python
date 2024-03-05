@@ -38,7 +38,7 @@ def handle_connection_res(con , addr):
                 if vector2[0].lower() == "ping":
                     response = "+PONG{}".format(CRLF)
                 elif vector2[0].lower() == "echo":
-                    response = "+" + vector2[4] + CRLF
+                    response = "+" + vector2[1] + CRLF
                 elif vector2[0].lower() == "set": 
                     myDict = {vector2[1]: vector2[2]}
                     if len(vector2) > 4:
