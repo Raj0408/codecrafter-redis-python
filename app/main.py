@@ -1,13 +1,10 @@
 # Uncomment this to pass the first stage
 import socket
+import threading
 
 
-def main():
-    
-    print("Logs from your program will appear here!")
+def handle_connection_res(con , addr):
     ping = "+PONG\r\n"
-    server_socket = socket.create_server(("localhost", 6379))
-    con , addr = server_socket.accept() # wait for client
     print("Connected by ",addr)
     with con:
         while True:
@@ -15,8 +12,25 @@ def main():
             if not data:
                 break
             else:
-                print("Received: ",data.decode())
+                print(f"Received from {con}: ",data.decode())
                 con.send(ping.encode())
 
+def main():
+    
+    print("Logs from your program will appear here!")
+    
+    server_socket = socket.create_server(("localhost", 6379))
+    server_socket.listen()
+    while True:
+        conn , addr = server_socket.accept()
+        thread = threading.Thread(target=handle_connection_res, args=(conn, addr))
+        thread.start()
+
+    
+    
+    
+    
+    # wait for client
+   
 if __name__ == "__main__":
     main()
