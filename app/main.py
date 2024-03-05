@@ -2,11 +2,13 @@
 import socket
 import threading
 import time
+import cliparse
 
 myTime = time.time_ns()
 myDict = {}
 flag = False
 
+DEFAULT_PORT = 6379
 
 def handle_command(data):
     if(data.startswith("echo")):
@@ -60,8 +62,12 @@ def main():
     print("Logs from your program will appear here!")
     my_time = time.time_ns() * 10 ** -6
     print(my_time)
-    
-    server_socket = socket.create_server(("localhost", 6379))
+    cli_arg_parser = cliparse.CLIArgParser()
+    args = cli_arg_parser.parse_args()
+    port = args.port
+    if port is None:
+        port = DEFAULT_PORT
+    server_socket = socket.create_server(("localhost", port))
     server_socket.listen()
     while True:
         conn , addr = server_socket.accept()
