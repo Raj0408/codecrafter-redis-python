@@ -73,7 +73,8 @@ def handle_connection_res(con , addr):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
                 if vector2[0].lower() == "info":
-                    response = InfoHandler(Role.MASTER)
+                     response = f"$11\r\nrole:master\r\n"
+
                 con.send(response.encode())
 
                 
