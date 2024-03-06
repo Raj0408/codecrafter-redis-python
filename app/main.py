@@ -98,8 +98,8 @@ def command_checker(vector2,info):
         #     ]
         # )
         response = f"$85\r\nrole:{info.role.value}\r\n"
-        response += f"$54\r\nmaster_replid:{info.master_replid}\r\n"
-        response += f"$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
+        response += f"master_replid:{info.master_replid}\r\n"
+        response += f"master_repl_offset:{info.master_repl_offset}\r\n"
         print(response)
         
     return response.encode()
