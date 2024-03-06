@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-
+import argparse
 from enum import Enum, auto
 import sys
 
@@ -100,6 +100,10 @@ def main():
     global MASTER_PORT
     print("Logs from your program will appear here!")
     host = "localhost"
+
+    parser = argparse.ArgumentParser("Redis server")
+    parser.add_argument("--port", type=int, default=6379, help="Port to listen on")
+    
   
     args_iter = iter(sys.argv[1:])
     port = DEFAULT_PORT
@@ -112,8 +116,9 @@ def main():
     role = Role.SLAVE if MASTER_PORT is not None else Role.MASTER
     info = InfoHandler(role=role,host=host,port=port,master_host=MASTER_HOST,master_port=MASTER_PORT)
     print("port value is ",port)
-    server_socket = socket.create_server((host, port), reuse_port=True)
-    server_socket.listen()
+
+
+    server_socket = socket.create_server(("localhost", port), reuse_port=True)
     while True:
         conn , addr = server_socket.accept()
         thread = threading.Thread(target=handle_connection_res, args=(conn, addr,info))
