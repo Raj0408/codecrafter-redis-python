@@ -53,7 +53,7 @@ def getresponce(message):
         return echoPattern
 
 
-def command_checker(vector,info):
+def command_checker(vector,info) -> str:
     global myDict
     global flag
     # This function will check the command
@@ -83,9 +83,6 @@ def command_checker(vector,info):
             return getresponce(info.role.value)
         else:
             return getresponce(info.role.value)
-        
-    else:
-        return "Invalid Command"
 
 def handle_connection_res(con , addr,info):
     # This function will handle the connection of the client with the server
