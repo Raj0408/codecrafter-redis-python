@@ -88,11 +88,13 @@ def command_checker(vector2,info):
         #     response = f"$10\r\nrole:{info.role.value}\r\n"
         #     print("sending re")
         print("this is the info section ")
+        print(info.role.value)
+        print(info.master_replid)
         response2 = "\n".join(
             [
                 f"role:{info.role.value}",
-                f"master_replid:{info.role.master_replid}",
-                f"master_repl_offset:{info.role.master_repl_offset}",
+                f"master_replid:{info.master_replid}",
+                f"master_repl_offset:{info.master_repl_offset}",
             ]
         )
         response_len = len(response)
