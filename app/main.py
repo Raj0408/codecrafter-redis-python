@@ -102,7 +102,7 @@ def main():
     info.host = host
     info.port = port
 
-    server_socket = socket.create_server((info.host, info.port), reuse_port=True)
+    server_socket = socket.create_server((host, port), reuse_port=True)
     server_socket.listen()
     while True:
         conn , addr = server_socket.accept()
