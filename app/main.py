@@ -80,14 +80,25 @@ def command_checker(vector2,info):
             if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                 response = getresponce("")
     elif command == "info":
-        if info.role == Role.MASTER:
-            response = f"$11\r\nrole:{info.role.value}\r\n"
-            print(info.role.master_replid)
-            response += f"$54\r\nmaster_replid:{info.master_replid}\r\n"
-            response += f"$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
-        else:
-            response = f"$10\r\nrole:{info.role.value}\r\n"
-            print("sending re")
+        # if info.role == Role.MASTER:
+        #     response = f"$11\r\nrole:{info.role.value}\r\n"
+        #     response += f"$54\r\nmaster_replid:{info.master_replid}\r\n"
+        #     response += f"$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
+        # else:
+        #     response = f"$10\r\nrole:{info.role.value}\r\n"
+        #     print("sending re")
+        
+        response2 = "\n".join(
+            [
+                f"role:{info.role.value}",
+                f"master_replid:{info.role.master_replid}",
+                f"master_repl_offset:{info.role.master_repl_offset}",
+            ]
+        )
+        response_len = len(response)
+        response = f"${response_len}\r\n{response2}\r\n"
+
+        
     return response.encode()
 
 def handle_connection_res(con , addr,info):
