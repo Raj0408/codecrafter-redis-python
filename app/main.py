@@ -13,6 +13,8 @@ flag = False
 
 DEFAULT_PORT = 6379
 CRFL = "\r\n"
+MASTER_HOST = None 
+MASTER_PORT = None
 
 
 class Role(Enum):
@@ -25,8 +27,17 @@ class InfoHandler:
     role: Role
     host: str
     port: int
-    def __init__(self, role: Role):
+    master_host: str
+    master_port: int
+    def __init__(self, role: Role, host, port, master_host, master_port):
         self.role = role
+        self.host = host
+        self.port = port
+        if role == Role.SLAVE:
+            self.master_host = master_host
+            self.master_port = master_port
+            
+
     def respond(self):
         response = f"role:{self.role.value}"
         response_len = len(response)
@@ -88,7 +99,6 @@ def main():
     
     print("Logs from your program will appear here!")
     host = "localhost"
-    master_port: int = None
   
     args_iter = iter(sys.argv[1:])
     port = DEFAULT_PORT
@@ -96,12 +106,10 @@ def main():
         if arg == "--port":
             port = int(next(args_iter))
         if arg == "--replicaof":
-            host = str(next(args_iter))
-            master_port = int(next(args_iter))
-    info = InfoHandler(Role.SLAVE if master_port is not None else Role.MASTER)
-    info.host = host
-    info.port = port
-
+            MASTER_HOST = str(next(args_iter))
+            MASTER_PORT = int(next(args_iter))
+    role = Role.SLAVE if MASTER_PORT is not None else Role.MASTER
+    info = InfoHandler(role=role,host=host,port=port,master_host=MASTER_HOST,master_port=MASTER_PORT)
     server_socket = socket.create_server((host, port), reuse_port=True)
     server_socket.listen()
     while True:
