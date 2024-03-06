@@ -57,6 +57,11 @@ def getresponce(message):
         echoPattern = echoPattern.replace("<data>", message)
         return echoPattern
 
+def master_ping(info):
+    sc = socket.socket()
+    sc.connect((info.master_host, info.master_port))
+
+
 
 def command_checker(vector2,info):
     global myDict
@@ -80,23 +85,7 @@ def command_checker(vector2,info):
             if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                 response = getresponce("")
     elif command == "info":
-        # if info.role == Role.MASTER:
-        #     response = f"$11\r\nrole:{info.role.value}\r\n"
-        #     response += f"$54\r\nmaster_replid:{info.master_replid}\r\n"
-        #     response += f"$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
-        # else:
-        #     response = f"$10\r\nrole:{info.role.value}\r\n"
-        #     print("sending re")
         print("this is the info section ")
-        print(info.role.value)
-        print(info.master_replid)
-        # response2 = "\n".join(
-        #     [
-        #         f"role:{info.role.value}",
-        #         f"master_replid:{info.master_replid}",
-        #         f"master_repl_offset:{info.master_repl_offset}",
-        #     ]
-        # )
         response = f"role:{info.role.value}\r\n"
         response += f"master_replid:{info.master_replid}\r\n"
         response += f"master_repl_offset:{info.master_repl_offset}\r\n"
@@ -134,7 +123,7 @@ def main():
     global MASTER_PORT
     print("Logs from your program will appear here!")
     host = "localhost"
-
+    m_conn = None
     # parse the command line arguments for host and port number
     args_iter = iter(sys.argv[1:])
     port = DEFAULT_PORT
@@ -151,6 +140,14 @@ def main():
     print("port value is ",port)
 
     print(MASTER_PORT)
+    if MASTER_PORT is not None:
+        m_conn = socket.socket()
+        m_conn.connect((args.replicaof[0], int(args.replicaof[1])))
+
+        t = threading.Thread(target=master_ping, daemon=True, args=[m_conn, ]).start()
+        t.start()
+
+
     # create the server socket
     server_socket = socket.create_server(("localhost", port))
     print("server is running on port ",port)
