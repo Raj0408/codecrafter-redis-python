@@ -2,7 +2,6 @@
 import socket
 import threading
 import time
-import argparse
 from enum import Enum, auto
 import sys
 
@@ -18,12 +17,12 @@ MASTER_PORT = None
 
 
 class Role(Enum):
-
+    # Assign the role to the server
     MASTER = "master"
     SLAVE = "slave"
-
-    
+   
 class InfoHandler:
+    # This class will handle the information of the server and client
     role: Role
     host: str
     port: int
@@ -44,6 +43,7 @@ class InfoHandler:
         return f"${response_len}\r\n{response}\r\n"
 
 def getresponce(message):
+    # This function will return the response to the client
     if len(message) == 0:
         return "$-1"+ CRFL
     else:
@@ -53,7 +53,42 @@ def getresponce(message):
         return echoPattern
 
 
+def command_checker(vector,info):
+    global myDict
+    global flag
+    # This function will check the command
+    command = vector[0].lower()
+    if command == "ping":
+        return getresponce("PONG")
+    elif command == "echo":
+        return getresponce(vector[1] if len(vector)>1 else "")
+    elif command == "set":
+        myDict = {vector[1]: vector[2]}
+        if len(vector) > 4:
+            myDict["expiry"] = vector[-1]
+            myDict["start"] = time.time_ns()
+            flag = True
+            return getresponce("OK")
+
+    elif command == "get":
+        response = getresponce(myDict[vector[1]])
+        if(flag):
+            if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
+                response = getresponce("")
+        return response
+
+    elif command == "info":
+        print("It's triggred")
+        if info.role == Role.MASTER:
+            return getresponce(info.role.value)
+        else:
+            return getresponce(info.role.value)
+        
+    else:
+        return "Invalid Command"
+
 def handle_connection_res(con , addr,info):
+    # This function will handle the connection of the client with the server
     CRLF = "\r\n"
     print("Connected by ",addr)
     with con:        
@@ -98,20 +133,18 @@ def handle_connection_res(con , addr,info):
                          response = f"$10\r\nrole:{info.role.value}\r\n"
                      print("sending re")
 
-                con.send(response.encode())
+                con.send(command_checker(vector2,info).encode())
 
                 
 
 def main():
+    # This is the main function of the server
     global MASTER_HOST
     global MASTER_PORT
     print("Logs from your program will appear here!")
     host = "localhost"
 
-    parser = argparse.ArgumentParser("Redis server")
-    parser.add_argument("--port", type=int, default=6379, help="Port to listen on")
-    
-  
+    # parse the command line arguments for host and port number
     args_iter = iter(sys.argv[1:])
     port = DEFAULT_PORT
     for arg in args_iter:
@@ -122,15 +155,18 @@ def main():
             MASTER_PORT = int(next(args_iter))
     
     role = Role.SLAVE if MASTER_PORT is not None else Role.MASTER
+    # create the info object
     info = InfoHandler(role=role,host=host,port=port,master_host=MASTER_HOST,master_port=MASTER_PORT)
     print("port value is ",port)
 
     print(MASTER_PORT)
+    # create the server socket
     server_socket = socket.create_server(("localhost", port))
     print("server is running on port ",port)
     while True:
         conn , addr = server_socket.accept()
         print('Got connection from',addr)
+        # create a new thread to handle the connection
         thread = threading.Thread(target=handle_connection_res, args=(conn, addr,info))
         thread.start()    
     # wait for client 
