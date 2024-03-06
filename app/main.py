@@ -4,6 +4,7 @@ import threading
 import time
 from app.cliparse import CLIArgParser
 from enum import Enum, auto
+import sys
 
 
 myTime = time.time_ns()
@@ -17,10 +18,13 @@ CRFL = "\r\n"
 class Role(Enum):
 
     MASTER = "master"
+    SLAVE = "slave"
 
     
 class InfoHandler:
     role: Role
+    host: str
+    port: int
     def __init__(self, role: Role):
         self.role = role
     def respond(self):
@@ -38,7 +42,7 @@ def getresponce(message):
         return echoPattern
 
 
-def handle_connection_res(con , addr):
+def handle_connection_res(con , addr,info):
     CRLF = "\r\n"
     print("Connected by ",addr)
     with con:
@@ -55,25 +59,26 @@ def handle_connection_res(con , addr):
                 for x, i in enumerate(vector):
                     if (x % 2 == 0) & (x != 0):
                         vector2.append(i)
+                command = vector2[0].lower()
 
-                if vector2[0].lower() == "ping":
+                if command == "ping":
                     response = getresponce("PONG")
-                if vector2[0].lower() == "echo":
+                if command == "echo":
                     response = getresponce(vector2[1] if len(vector2)>1 else "")
-                if vector2[0].lower() == "set": 
+                if command == "set": 
                     myDict = {vector2[1]: vector2[2]}
                     if len(vector2) > 4:
                         myDict["expiry"] = vector2[-1]
                         myDict["start"] = time.time_ns()
                         flag = True
                     response = getresponce("OK")
-                if vector2[0] == "get":
+                if command == "get":
                     response = getresponce(myDict[vector2[1]])
                     if(flag):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
-                if vector2[0].lower() == "info":
-                     response = f"$11\r\nrole:master\r\n"
+                if command == "info":
+                     response = f"$11\r\nrole:{info.role}\r\n"
 
                 con.send(response.encode())
 
@@ -82,18 +87,27 @@ def handle_connection_res(con , addr):
 def main():
     
     print("Logs from your program will appear here!")
+    host = "localhost"
+    master_port: int = None
     args = CLIArgParser().parse_args()
-    try:
-        port = int(args.port)
-    except:
-        port = 6379
-    server_socket = socket.create_server(("localhost", port))
- 
-    # server_socket = socket.create_server(("localhost", port))
+    args_iter = iter(sys.argv[1:])
+    port = DEFAULT_PORT
+    for arg in args_iter:
+        if arg == "--port":
+            port = int(next(args_iter))
+        if arg == "--replicaof":
+            host = str(next(args_iter))
+            master_port = int(next(args_iter))
+    info = InfoHandler
+    info.role = Role.MASTER if master_port is None else Role.SLAVE
+    info.host = host
+    info.port = port
+
+    server_socket = socket.create_server((info.host, info.port))
     server_socket.listen()
     while True:
         conn , addr = server_socket.accept()
-        thread = threading.Thread(target=handle_connection_res, args=(conn, addr))
+        thread = threading.Thread(target=handle_connection_res, args=(conn, addr,info))
         thread.start()    
     # wait for client 
 if __name__ == "__main__":

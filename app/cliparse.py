@@ -6,5 +6,6 @@ class CLIArgParser:
         self.parser.add_argument("--dir")
         self.parser.add_argument("--dbfilename")
         self.parser.add_argument("--port")
+        self.parser.add_argument("--replicaof")
     def parse_args(self):
         return self.parser.parse_args()
