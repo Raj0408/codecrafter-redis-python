@@ -83,6 +83,8 @@ def command_checker(vector,info) -> str:
             return getresponce(info.role.value)
         else:
             return getresponce(info.role.value)
+    else:
+        return getresponce(command)
 
 def handle_connection_res(con , addr,info):
     # This function will handle the connection of the client with the server
@@ -129,8 +131,8 @@ def handle_connection_res(con , addr,info):
                      else:
                          response = f"$10\r\nrole:{info.role.value}\r\n"
                      print("sending re")
-
-                con.send(command_checker(vector2,info).encode())
+                response = command_checker(vector2,info)
+                con.send(response.encode())
 
                 
 
