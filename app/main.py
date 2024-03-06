@@ -72,9 +72,9 @@ def handle_connection_res(con , addr):
                     if(flag):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
-                elif vector2[0] == "info":
+                elif vector2[0].lower() == "info":
                     replica_role.selfRole("master")
-                    response = getresponce(replica_role.getRole())
+                    response += getresponce("role: "+replica_role.getRole())
                 con.send(response.encode())
 
                 
