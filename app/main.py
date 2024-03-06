@@ -83,8 +83,8 @@ def command_checker(vector2,info):
         print("It's triggred")
         if info.role == Role.MASTER:
             response = f"$11\r\nrole:{info.role.value}\r\n"
-            response += getresponce(info.master_replid)
-            response += getresponce(info.master_repl_offset)
+            response += f"$54\r\nmaster_replid:{info.master_replid}\r\n"
+            response += f"$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
         else:
             response = f"$10\r\nrole:{info.role.value}\r\n"
             print("sending re")
