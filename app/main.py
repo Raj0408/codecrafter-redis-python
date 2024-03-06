@@ -73,8 +73,8 @@ def handle_connection_res(con , addr):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
                 elif vector2[0].lower() == "info":
-                    replica_role.selfRole("master")
-                    response = getresponce("role: "+replica_role.getRole()+"\n"+"connected_slaves: 0\n"+"used_memory: 0\n"+"total_memory: 0\n"+"db0:keys=1,expires=0\n")
+                    a = replica_role.selfRole("master")
+                    response = getresponce("role: "+a.getRole()+"\n"+"connected_slaves: 0\n"+"used_memory: 0\n"+"total_memory: 0\n"+"db0:keys=1,expires=0\n")
                 con.send(response.encode())
 
                 
