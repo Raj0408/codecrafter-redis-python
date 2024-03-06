@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-from app.cliparse import CLIArgParser
+from cliparse import CLIArgParser
 
 
 myTime = time.time_ns()
@@ -11,6 +11,21 @@ flag = False
 
 DEFAULT_PORT = 6379
 CRFL = "\r\n"
+
+
+class replica_role:
+
+    role : str = None
+    port : int = None
+
+    def __init__(self,port):
+        self.port = port
+    def selfRole(self,role):
+        self.role = role
+    def getRole(self):
+        return self.role
+    def getPort(self):
+        return self.port
 
 
 def getresponce(message):
@@ -56,7 +71,10 @@ def handle_connection_res(con , addr):
                     response = getresponce(myDict[vector2[1]])
                     if(flag):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
-                            getresponce("")
+                            response = getresponce("")
+                elif vector2[0] == "info":
+                    replica_role.selfRole("master")
+                    response = getresponce(replica_role.getRole())
                 con.send(response.encode())
 
                 
@@ -70,7 +88,7 @@ def main():
     except:
         port = 6379
 
-    server_socket = socket.create_server(("localhost", port), reuse_port=True)
+    server_socket = socket.create_server(("localhost", port))
  
     # server_socket = socket.create_server(("localhost", port))
     server_socket.listen()
