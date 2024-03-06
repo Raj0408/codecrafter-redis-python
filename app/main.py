@@ -81,8 +81,8 @@ def command_checker(vector2,info):
                 response = getresponce("")
     elif command == "info":
         if info.role == Role.MASTER:
-            response = f"$11\r\nrole:{info.role.value}\r\n"
-            response += f"\n$54\r\nmaster_replid:{info.master_replid}\r\n"
+            response = f"$11\r\nrole:{info.role.value} + \n$54\r\nmaster_replid:{info.master_replid} + \n$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
+            response += f""
             response += f"\n$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
         else:
             response = f"$10\r\nrole:{info.role.value}\r\n"
