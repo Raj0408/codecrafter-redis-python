@@ -58,21 +58,21 @@ def handle_connection_res(con , addr):
 
                 if vector2[0].lower() == "ping":
                     response = getresponce("PONG")
-                elif vector2[0].lower() == "echo":
+                if vector2[0].lower() == "echo":
                     response = getresponce(vector2[1] if len(vector2)>1 else "")
-                elif vector2[0].lower() == "set": 
+                if vector2[0].lower() == "set": 
                     myDict = {vector2[1]: vector2[2]}
                     if len(vector2) > 4:
                         myDict["expiry"] = vector2[-1]
                         myDict["start"] = time.time_ns()
                         flag = True
                     response = getresponce("OK")
-                elif vector2[0] == "get":
+                if vector2[0] == "get":
                     response = getresponce(myDict[vector2[1]])
                     if(flag):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
-                elif vector2[0].lower() == "info":
+                if vector2[0].lower() == "info":
                     response = InfoHandler(Role.MASTER)
                 con.send(response.encode())
 
