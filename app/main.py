@@ -53,39 +53,35 @@ def getresponce(message):
         return echoPattern
 
 
-def command_checker(vector,info):
+def command_checker(vector2,info):
     global myDict
     global flag
     # This function will check the command
-    command = vector[0].lower()
+    command = vector2[0].lower()
     if command == "ping":
-        return getresponce("PONG")
+        response = getresponce("PONG")
     elif command == "echo":
-        return getresponce(vector[1] if len(vector)>1 else "")
-    elif command == "set":
-        myDict = {vector[1]: vector[2]}
-        if len(vector) > 4:
-            myDict["expiry"] = vector[-1]
+        response = getresponce(vector2[1] if len(vector2)>1 else "")
+    elif command == "set": 
+        myDict = {vector2[1]: vector2[2]}
+        if len(vector2) > 4:
+            myDict["expiry"] = vector2[-1]
             myDict["start"] = time.time_ns()
             flag = True
-            return getresponce("OK")
-
+        response = getresponce("OK")
     elif command == "get":
-        response = getresponce(myDict[vector[1]])
+        response = getresponce(myDict[vector2[1]])
         if(flag):
             if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                 response = getresponce("")
-        return response
-
     elif command == "info":
         print("It's triggred")
         if info.role == Role.MASTER:
-            return getresponce(info.role.value)
+            response = f"$11\r\nrole:{info.role.value}\r\n"
         else:
-            return getresponce(info.role.value)
-        
-    else:
-        return "Invalid Command"
+            response = f"$10\r\nrole:{info.role.value}\r\n"
+            print("sending re")
+    return response.encode()
 
 def handle_connection_res(con , addr,info):
     # This function will handle the connection of the client with the server
@@ -133,7 +129,7 @@ def handle_connection_res(con , addr,info):
                          response = f"$10\r\nrole:{info.role.value}\r\n"
                      print("sending re")
 
-                con.send(response.encode())
+                con.send(command_checker(vector2,info))
 
                 
 
