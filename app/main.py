@@ -13,20 +13,19 @@ DEFAULT_PORT = 6379
 CRFL = "\r\n"
 
 
-class replica_role:
+class Role(Enum):
 
-    role : str = None
-    port : int = None
+    MASTER = "master"
 
-    def __init__(self,port):
-        self.port = port
-    def selfRole(self,role):
+    
+class InfoHandler:
+    role: Role
+    def __init__(self, role: Role):
         self.role = role
-    def getRole(self):
-        return self.role
-    def getPort(self):
-        return self.port
-
+    def respond(self):
+        response = f"role:{self.role.value}"
+        response_len = len(response)
+        return f"${response_len}\r\n{response}\r\n"
 
 def getresponce(message):
     if len(message) == 0:
@@ -73,8 +72,7 @@ def handle_connection_res(con , addr):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
                 elif vector2[0].lower() == "info":
-                    a = replica_role.selfRole("master")
-                    response = getresponce("role: "+a.getRole()+"\n"+"connected_slaves: 0\n"+"used_memory: 0\n"+"total_memory: 0\n"+"db0:keys=1,expires=0\n")
+                    response = InfoHandler(Role.MASTER)
                 con.send(response.encode())
 
                 
@@ -87,8 +85,7 @@ def main():
         port = int(args.port)
     except:
         port = 6379
-    config = replica_role(port)
-    server_socket = socket.create_server(("localhost", config.getPort()))
+    server_socket = socket.create_server(("localhost", port))
  
     # server_socket = socket.create_server(("localhost", port))
     server_socket.listen()
