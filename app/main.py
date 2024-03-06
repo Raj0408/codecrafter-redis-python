@@ -89,7 +89,7 @@ def main():
     print("Logs from your program will appear here!")
     host = "localhost"
     master_port: int = None
-    args = CLIArgParser().parse_args()
+  
     args_iter = iter(sys.argv[1:])
     port = DEFAULT_PORT
     for arg in args_iter:
