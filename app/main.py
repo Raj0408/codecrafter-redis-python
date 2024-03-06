@@ -28,6 +28,9 @@ class InfoHandler:
     port: int
     master_host: str
     master_port: int
+    master_replid: str
+    master_repl_offset:int
+
     def __init__(self, role: Role, host, port, master_host, master_port):
         self.role = role
         self.host = host
@@ -35,7 +38,9 @@ class InfoHandler:
         if role == Role.SLAVE:
             self.master_host = master_host
             self.master_port = master_port
-            
+        if role == Role.MASTER:
+            self.master_replid = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+            self.master_repl_offset = 0  
 
     def respond(self):
         response = f"role:{self.role.value}"
@@ -78,6 +83,8 @@ def command_checker(vector2,info):
         print("It's triggred")
         if info.role == Role.MASTER:
             response = f"$11\r\nrole:{info.role.value}\r\n"
+            response += getresponce(info.master_replid)
+            response += getresponce(info.master_repl_offset)
         else:
             response = f"$10\r\nrole:{info.role.value}\r\n"
             print("sending re")
@@ -103,32 +110,6 @@ def handle_connection_res(con , addr,info):
                         vector2.append(i)
                 if vector2 is None or len(vector2) == 0:
                     continue
-                command = vector2[0].lower()
-
-                if command == "ping":
-                    response = getresponce("PONG")
-                elif command == "echo":
-                    response = getresponce(vector2[1] if len(vector2)>1 else "")
-                elif command == "set": 
-                    myDict = {vector2[1]: vector2[2]}
-                    if len(vector2) > 4:
-                        myDict["expiry"] = vector2[-1]
-                        myDict["start"] = time.time_ns()
-                        flag = True
-                    response = getresponce("OK")
-                elif command == "get":
-                    response = getresponce(myDict[vector2[1]])
-                    if(flag):
-                        if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
-                            response = getresponce("")
-                elif command == "info":
-                     print("It's triggred")
-                     if info.role == Role.MASTER:
-                         response = f"$11\r\nrole:{info.role.value}\r\n"
-                     else:
-                         response = f"$10\r\nrole:{info.role.value}\r\n"
-                     print("sending re")
-
                 con.send(command_checker(vector2,info))
 
                 
