@@ -3,6 +3,7 @@ import socket
 import threading
 import time
 from app.cliparse import CLIArgParser
+from enum import Enum, auto
 
 
 myTime = time.time_ns()
