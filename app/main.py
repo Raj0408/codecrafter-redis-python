@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-from app.cliparse import CLIArgParser
+
 from enum import Enum, auto
 import sys
 
@@ -102,7 +102,7 @@ def main():
     info.host = host
     info.port = port
 
-    server_socket = socket.create_server((info.host, info.port))
+    server_socket = socket.create_server((info.host, info.port), reuse_port=True)
     server_socket.listen()
     while True:
         conn , addr = server_socket.accept()
