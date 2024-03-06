@@ -56,8 +56,7 @@ def getresponce(message):
 def handle_connection_res(con , addr,info):
     CRLF = "\r\n"
     print("Connected by ",addr)
-    with con:
-        
+    with con:        
         while True:
             global myDict
             global flag
@@ -74,21 +73,21 @@ def handle_connection_res(con , addr,info):
 
                 if command == "ping":
                     response = getresponce("PONG")
-                if command == "echo":
+                elif command == "echo":
                     response = getresponce(vector2[1] if len(vector2)>1 else "")
-                if command == "set": 
+                elif command == "set": 
                     myDict = {vector2[1]: vector2[2]}
                     if len(vector2) > 4:
                         myDict["expiry"] = vector2[-1]
                         myDict["start"] = time.time_ns()
                         flag = True
                     response = getresponce("OK")
-                if command == "get":
+                elif command == "get":
                     response = getresponce(myDict[vector2[1]])
                     if(flag):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
-                if command == "info":
+                elif command == "info":
                      response = f"$11\r\nrole:{info.role.value}\r\n"
 
                 con.send(response.encode())
@@ -113,11 +112,12 @@ def main():
         if arg == "--replicaof":
             MASTER_HOST = str(next(args_iter))
             MASTER_PORT = int(next(args_iter))
+    
     role = Role.SLAVE if MASTER_PORT is not None else Role.MASTER
     info = InfoHandler(role=role,host=host,port=port,master_host=MASTER_HOST,master_port=MASTER_PORT)
     print("port value is ",port)
 
-
+    print(MASTER_PORT)
     server_socket = socket.create_server(("localhost", port), reuse_port=True)
     print("server is running on port ",port)
     while True:
