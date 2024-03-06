@@ -92,7 +92,10 @@ def handle_connection_res(con , addr,info):
                             response = getresponce("")
                 elif command == "info":
                      print("It's triggred")
-                     response = f"$11\r\nrole:{info.role.value}\r\n"
+                     if info.role == Role.MASTER:
+                         response = f"$11\r\nrole:{info.role.value}\r\n"
+                     else:
+                         response = f"$10\r\nrole:{info.role.value}\r\n"
                      print("sending re")
 
                 con.send(response.encode())
