@@ -87,7 +87,7 @@ def command_checker(vector2,info):
         # else:
         #     response = f"$10\r\nrole:{info.role.value}\r\n"
         #     print("sending re")
-        
+        print("this is the info section ")
         response2 = "\n".join(
             [
                 f"role:{info.role.value}",
