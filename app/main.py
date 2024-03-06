@@ -111,6 +111,7 @@ def main():
             MASTER_PORT = int(next(args_iter))
     role = Role.SLAVE if MASTER_PORT is not None else Role.MASTER
     info = InfoHandler(role=role,host=host,port=port,master_host=MASTER_HOST,master_port=MASTER_PORT)
+    print("port value is ",port)
     server_socket = socket.create_server((host, port), reuse_port=True)
     server_socket.listen()
     while True:
