@@ -132,7 +132,9 @@ def handle_connection_res(con , addr,info):
                 #          response = f"$10\r\nrole:{info.role.value}\r\n"
                 #      print("sending re")
                 response = command_checker(vector2,info)
-                con.send(response.encode())
+                if response is not None:
+                    response = response.encode()
+                con.send(response)
 
                 
 
