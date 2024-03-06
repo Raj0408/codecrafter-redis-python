@@ -93,7 +93,7 @@ def handle_connection_res(con , addr,info):
                 elif command == "info":
                      print("It's triggred")
                      if info.role.value == "master":
-                            response = f"$11\r\nrole:{info.role.value}\r\n"
+                            response = f"$11\r\nrole:master\r\n"
                      response = f"$10\r\nrole:{info.role.value}\r\n"
                      print("sending reply",response)
 
