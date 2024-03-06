@@ -38,9 +38,9 @@ class InfoHandler:
         if role == Role.SLAVE:
             self.master_host = master_host
             self.master_port = master_port
-        if role == Role.MASTER:
-            self.master_replid = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
-            self.master_repl_offset = 0  
+        self.master_replid = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+        self.master_repl_offset = 0  
+            
 
     def respond(self):
         response = f"role:{self.role.value}"
@@ -81,9 +81,9 @@ def command_checker(vector2,info):
                 response = getresponce("")
     elif command == "info":
         if info.role == Role.MASTER:
-            response = f"$11\r\nrole:{info.role.value} + \n$54\r\nmaster_replid:{info.master_replid} + \n$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
-            response += f""
-            response += f"\n$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
+            response = f"$11\r\nrole:{info.role.value}\r\n"
+            response += f"$54\r\nmaster_replid:{info.master_replid}\r\n"
+            response += f"$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
         else:
             response = f"$10\r\nrole:{info.role.value}\r\n"
             print("sending re")
