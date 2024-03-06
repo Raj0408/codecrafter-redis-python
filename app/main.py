@@ -80,11 +80,10 @@ def command_checker(vector2,info):
             if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                 response = getresponce("")
     elif command == "info":
-        print("It's triggred")
         if info.role == Role.MASTER:
             response = f"$11\r\nrole:{info.role.value}\r\n"
-            response += f"$54\r\nmaster_replid:{info.master_replid}\r\n"
-            response += f"$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
+            response += f"\n$54\r\nmaster_replid:{info.master_replid}\r\n"
+            response += f"\n$20\r\nmaster_repl_offset:{info.master_repl_offset}\r\n"
         else:
             response = f"$10\r\nrole:{info.role.value}\r\n"
             print("sending re")
