@@ -96,8 +96,9 @@ def command_checker(vector2,info):
             ]
         )
         response_len = len(response)
+        print(response2)
         response = f"${response_len}\r\n{response2}\r\n"
-
+        print(response)
         
     return response.encode()
 
