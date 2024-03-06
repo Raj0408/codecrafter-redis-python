@@ -78,7 +78,7 @@ def handle_connection_res(con , addr,info):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
                 if command == "info":
-                     response = f"$11\r\nrole:{info.role}\r\n"
+                     response = f"$11\r\nrole:{info.role.name}\r\n"
 
                 con.send(response.encode())
 
@@ -98,8 +98,7 @@ def main():
         if arg == "--replicaof":
             host = str(next(args_iter))
             master_port = int(next(args_iter))
-    info = InfoHandler
-    info.role = Role.MASTER if master_port is None else Role.SLAVE
+    info = InfoHandler(Role.SLAVE if master_port is not None else Role.MASTER)
     info.host = host
     info.port = port
 
