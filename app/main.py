@@ -90,16 +90,14 @@ def command_checker(vector2,info):
         print("this is the info section ")
         print(info.role.value)
         print(info.master_replid)
-        response2 = "\n".join(
-            [
-                f"role:{info.role.value}",
-                f"master_replid:{info.master_replid}",
-                f"master_repl_offset:{info.master_repl_offset}",
-            ]
-        )
-        response_len = len(response)
-        print(response2)
-        response = f"${response_len}\r\n{response2}\r\n"
+        # response2 = "\n".join(
+        #     [
+        #         f"role:{info.role.value}",
+        #         f"master_replid:{info.master_replid}",
+        #         f"master_repl_offset:{info.master_repl_offset}",
+        #     ]
+        # )
+        response = f"$11\r\nrole:{info.role.value}\r\n"
         print(response)
         
     return response.encode()
