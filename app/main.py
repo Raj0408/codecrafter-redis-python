@@ -119,8 +119,10 @@ def main():
 
 
     server_socket = socket.create_server(("localhost", port), reuse_port=True)
+    print("server is running on port ",port)
     while True:
         conn , addr = server_socket.accept()
+        print('Got connection from',addr)
         thread = threading.Thread(target=handle_connection_res, args=(conn, addr,info))
         thread.start()    
     # wait for client 
