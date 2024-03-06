@@ -91,7 +91,9 @@ def handle_connection_res(con , addr,info):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
                 elif command == "info":
+                     print("It's triggred")
                      response = f"$11\r\nrole:{info.role.value}\r\n"
+                     print("sending reply",response)
 
                 con.send(response.encode())
 
