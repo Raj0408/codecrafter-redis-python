@@ -88,7 +88,7 @@ def main():
     except:
         port = 6379
     config = replica_role(port)
-    server_socket = socket.create_server(("localhost", replica_role.getPort()))
+    server_socket = socket.create_server(("localhost", config.getPort()))
  
     # server_socket = socket.create_server(("localhost", port))
     server_socket.listen()
