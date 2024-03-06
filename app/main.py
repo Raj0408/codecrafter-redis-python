@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-from cliparse import CLIArgParser
+from app.cliparse import CLIArgParser
 
 
 myTime = time.time_ns()
