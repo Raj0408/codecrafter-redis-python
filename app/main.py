@@ -74,7 +74,7 @@ def handle_connection_res(con , addr):
                             response = getresponce("")
                 elif vector2[0].lower() == "info":
                     replica_role.selfRole("master")
-                    response += getresponce("role: "+replica_role.getRole())
+                    response = getresponce("role: "+replica_role.getRole()+"\n"+"connected_slaves: 0\n"+"used_memory: 0\n"+"total_memory: 0\n"+"db0:keys=1,expires=0\n")
                 con.send(response.encode())
 
                 
@@ -87,8 +87,8 @@ def main():
         port = int(args.port)
     except:
         port = 6379
-
-    server_socket = socket.create_server(("localhost", port))
+    config = replica_role(port)
+    server_socket = socket.create_server(("localhost", replica_role.getPort()))
  
     # server_socket = socket.create_server(("localhost", port))
     server_socket.listen()
