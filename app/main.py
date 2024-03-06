@@ -64,11 +64,14 @@ def handle_connection_res(con , addr,info):
             if not chunk:
                 break
             else:
+                print(chunk.decode())
                 vector = chunk.decode().split(CRLF)
                 vector2 = []
                 for x, i in enumerate(vector):
                     if (x % 2 == 0) & (x != 0):
                         vector2.append(i)
+                if vector2 is None or len(vector2) == 0:
+                    continue
                 command = vector2[0].lower()
 
                 if command == "ping":
@@ -118,7 +121,7 @@ def main():
     print("port value is ",port)
 
     print(MASTER_PORT)
-    server_socket = socket.create_server(("localhost", port), reuse_port=True)
+    server_socket = socket.create_server(("localhost", port))
     print("server is running on port ",port)
     while True:
         conn , addr = server_socket.accept()
