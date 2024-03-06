@@ -74,7 +74,7 @@ def command_checker(vector,info) -> str:
         response = getresponce(myDict[vector[1]])
         if(flag):
             if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
-                response = getresponce("")
+                response = getresponce(None)
         return response
 
     elif command == "info":
@@ -84,7 +84,7 @@ def command_checker(vector,info) -> str:
         else:
             return getresponce(info.role.value)
     else:
-        return getresponce(command)
+        return getresponce("")
 
 def handle_connection_res(con , addr,info):
     # This function will handle the connection of the client with the server
@@ -108,29 +108,29 @@ def handle_connection_res(con , addr,info):
                     continue
                 command = vector2[0].lower()
 
-                if command == "ping":
-                    response = getresponce("PONG")
-                elif command == "echo":
-                    response = getresponce(vector2[1] if len(vector2)>1 else "")
-                elif command == "set": 
-                    myDict = {vector2[1]: vector2[2]}
-                    if len(vector2) > 4:
-                        myDict["expiry"] = vector2[-1]
-                        myDict["start"] = time.time_ns()
-                        flag = True
-                    response = getresponce("OK")
-                elif command == "get":
-                    response = getresponce(myDict[vector2[1]])
-                    if(flag):
-                        if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
-                            response = getresponce("")
-                elif command == "info":
-                     print("It's triggred")
-                     if info.role == Role.MASTER:
-                         response = f"$11\r\nrole:{info.role.value}\r\n"
-                     else:
-                         response = f"$10\r\nrole:{info.role.value}\r\n"
-                     print("sending re")
+                # if command == "ping":
+                #     response = getresponce("PONG")
+                # elif command == "echo":
+                #     response = getresponce(vector2[1] if len(vector2)>1 else "")
+                # elif command == "set": 
+                #     myDict = {vector2[1]: vector2[2]}
+                #     if len(vector2) > 4:
+                #         myDict["expiry"] = vector2[-1]
+                #         myDict["start"] = time.time_ns()
+                #         flag = True
+                #     response = getresponce("OK")
+                # elif command == "get":
+                #     response = getresponce(myDict[vector2[1]])
+                #     if(flag):
+                #         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
+                #             response = getresponce("")
+                # elif command == "info":
+                #      print("It's triggred")
+                #      if info.role == Role.MASTER:
+                #          response = f"$11\r\nrole:{info.role.value}\r\n"
+                #      else:
+                #          response = f"$10\r\nrole:{info.role.value}\r\n"
+                #      print("sending re")
                 response = command_checker(vector2,info)
                 con.send(response.encode())
 
