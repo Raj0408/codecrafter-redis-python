@@ -96,7 +96,8 @@ def handle_connection_res(con , addr,info):
                 
 
 def main():
-    
+    global MASTER_HOST
+    global MASTER_PORT
     print("Logs from your program will appear here!")
     host = "localhost"
   
