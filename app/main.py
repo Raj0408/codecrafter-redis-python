@@ -78,7 +78,7 @@ def handle_connection_res(con , addr,info):
                         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
                             response = getresponce("")
                 if command == "info":
-                     response = f"$11\r\nrole:{info.role.name}\r\n"
+                     response = f"$11\r\nrole:{info.role.value}\r\n"
 
                 con.send(response.encode())
 

@@ -22,4 +22,4 @@ class InfoHandler:
         return f"${response_len}\r\n{response}\r\n"
     
 info = InfoHandler(Role.MASTER)
-print(info.role.name)
+print(info.role.value)
