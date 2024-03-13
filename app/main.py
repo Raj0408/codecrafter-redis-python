@@ -66,6 +66,21 @@ class RaplicaHandler:
         if sent_bytes == 0:
             print("Failure connecting to Master")
         response = self.sock.recv(1024)
+    def _replconf(self):
+        replconf_command_port = "*3\r\n" + getresponce("REPLCONF") + getresponce("lisneting-port") + getresponce("6380")
+        sent_bytes = self.sock.send(str.encode(replconf_command_port))
+        if sent_bytes == 0:
+            print("Failure connecting to Master")
+        response = self.sock.recv(1024)
+        print(response)
+        # `REPLCONF listening-port <port>
+        replconf_command_cap = "*3\r\n" + getresponce("REPLCONF") + getresponce("capa") + getresponce("psync2")
+        sent_bytes = self.sock.send(str.encode(replconf_command_cap))
+        if sent_bytes == 0:
+            print("Failure connecting to Master")
+        response = self.sock.recv(1024)
+        # replcaonf capabilites
+
 
 class Redis:
 
@@ -149,6 +164,8 @@ def command_checker(vector2,info):
         response += f"master_replid:{info.master_replid}\r\n"
         response += f"master_repl_offset:{info.master_repl_offset}\r\n"
         response = getresponce(response)
+    elif command == "REPLCONF":
+        response = getresponce("OK")
         
     return response.encode()
 
