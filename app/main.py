@@ -175,11 +175,11 @@ def command_checker(vector2,info):
         response += f"master_repl_offset:{info.master_repl_offset}\r\n"
         response = getresponce(response)
 
-    elif command == "REPLCONF" or vector2[1] == "listening-port":
+    elif command == "replconf" or vector2[1] == "listening-port":
         response = getresponce("OK")
-    elif command == "REPLCONF" or vector2[1] == "capa":
+    elif command == "replconf" or vector2[1] == "capa":
         response = getresponce("OK")
-    elif command == "PSYNC":
+    elif command == "psync":
         response = f"+FULLRESYNC {info.master_replid} {info.master_repl_offset}\r\n"
         response = getresponce(response)
     return response.encode()
