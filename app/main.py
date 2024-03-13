@@ -60,6 +60,7 @@ class RaplicaHandler:
     def start_slave(self):
         self._ping()
         self._replconf()
+        self._psync()
 
     def _ping(self):
         ping_command = "*1\r\n" + getresponce("PING")
@@ -82,6 +83,14 @@ class RaplicaHandler:
             print("Failure connecting to Master")
         response = self.sock.recv(1024)
         # replcaonf capabilites
+
+    def _psync(self):
+        psync_command = "*3\r\n" + getresponce("PSYNC") + getresponce("?") + getresponce("-1")
+        sent_bytes = self.sock.send(str.encode(psync_command))
+        if sent_bytes == 0:
+            print("Failure connecting to Master")
+        response = self.sock.recv(1024)
+        print(response)
 
 
 class Redis:
@@ -168,7 +177,9 @@ def command_checker(vector2,info):
         response = getresponce(response)
     elif command == "REPLCONF":
         response = getresponce("OK")
-        
+    elif command == "PSYNC":
+        response = f"+FULLRESYNC {vector2[1]} {0}\r\n"
+        response = getresponce(response)
     return response.encode()
 
 def handle_connection_res(con , addr,info):
