@@ -47,6 +47,65 @@ class InfoHandler:
         response_len = len(response)
         return f"${response_len}\r\n{response}\r\n"
 
+class RaplicaHandler:
+    sock = None
+
+    def __init__(self ,info):
+        self.info = info
+        if info.role == Role.SLAVE:
+            self.sock = socket.create_connection(
+                (info.master_host, info.master_port)
+            )
+
+    def start_slave(self):
+        self._ping()
+
+    def _ping(self):
+        ping_command = "*1\r\n" + getresponce("PING")
+        sent_bytes = self.sock.send(str.encode(ping_command))
+        if sent_bytes == 0:
+            print("Failure connecting to Master")
+        response = self.sock.recv(1024)
+
+class Redis:
+
+    server_socket = None
+
+    def __init__(self,info) -> None:
+
+        if(info.role == Role.SLAVE):
+            Raplica = RaplicaHandler(info)
+            Raplica.start_slave()
+        
+        host = info.host
+        port = info.port
+        server_socket = socket.create_server((host, port))
+        print("server is running on port ",port)
+        while True:
+            conn, addr = server_socket.accept()
+            client_thread = threading.Thread(
+                target=handle_connection_res, args=(conn, addr,info)
+            )
+            client_thread.start()
+        
+
+
+
+
+        # self.info = info
+        # self.server_socket = socket.create_server(("localhost", info.port))
+        # print("server is running on port ",info.port)
+        # Raplica = RaplicaHandler(info)
+        # Raplica.start_slave()
+        
+
+    # def server_up(self,socket,info):
+       
+
+        
+    
+        
+
 def getresponce(message):
     # This function will return the response to the client
     if len(message) == 0:
@@ -138,25 +197,10 @@ def main():
     # create the info object
     info = InfoHandler(role=role,host=host,port=port,master_host=MASTER_HOST,master_port=MASTER_PORT)
     print("port value is ",port)
-
     print(MASTER_PORT)
-    if MASTER_PORT is not None:
-        m_conn = socket.socket()
-        m_conn.connect((args.replicaof[0], int(args.replicaof[1])))
-
-        t = threading.Thread(target=master_ping, daemon=True, args=[m_conn, ]).start()
-        t.start()
-
-
-    # create the server socket
-    server_socket = socket.create_server(("localhost", port))
-    print("server is running on port ",port)
-    while True:
-        conn , addr = server_socket.accept()
-        print('Got connection from',addr)
-        # create a new thread to handle the connection
-        thread = threading.Thread(target=handle_connection_res, args=(conn, addr,info))
-        thread.start()    
+    redis = Redis(info)
+    redis.server_up()
+    # create the server socket   
     # wait for client 
 if __name__ == "__main__":
     main()
