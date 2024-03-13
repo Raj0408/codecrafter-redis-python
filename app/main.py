@@ -69,7 +69,7 @@ class RaplicaHandler:
         response = self.sock.recv(1024)
 
     def _replconf(self):
-        replconf_command_port = "*3\r\n" + getresponce("REPLCONF") + getresponce("listenig -port") + getresponce("6380")
+        replconf_command_port = "*3\r\n" + getresponce("REPLCONF") + getresponce("listening-port") + getresponce("6380")
         sent_bytes = self.sock.send(str.encode(replconf_command_port))
         if sent_bytes == 0:
             print("Failure connecting to Master")
