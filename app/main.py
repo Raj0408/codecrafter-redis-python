@@ -59,6 +59,7 @@ class RaplicaHandler:
 
     def start_slave(self):
         self._ping()
+        self._replconf()
 
     def _ping(self):
         ping_command = "*1\r\n" + getresponce("PING")
@@ -66,6 +67,7 @@ class RaplicaHandler:
         if sent_bytes == 0:
             print("Failure connecting to Master")
         response = self.sock.recv(1024)
+
     def _replconf(self):
         replconf_command_port = "*3\r\n" + getresponce("REPLCONF") + getresponce("lisneting-port") + getresponce("6380")
         sent_bytes = self.sock.send(str.encode(replconf_command_port))
