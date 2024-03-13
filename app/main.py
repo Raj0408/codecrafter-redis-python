@@ -180,7 +180,7 @@ def command_checker(vector2,info):
     elif command == "replconf" or vector2[1] == "capa":
         response = getresponce("OK")
     elif command == "psync":
-        response = f"+FULLRESYNC {info.master_replid} {0}\r\n"
+        response = f"FULLRESYNC {info.master_replid} {0}\r\n"
         response = getresponce(response)
     return response.encode()
 
