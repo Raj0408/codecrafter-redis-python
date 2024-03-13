@@ -175,6 +175,7 @@ def command_checker(vector2,info):
         response += f"master_replid:{info.master_replid}\r\n"
         response += f"master_repl_offset:{info.master_repl_offset}\r\n"
         response = getresponce(response)
+        
     elif command == "REPLCONF":
         response = getresponce("OK")
     elif command == "PSYNC":
