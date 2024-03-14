@@ -4,6 +4,7 @@ import threading
 import time
 from enum import Enum
 import sys
+import base64
 
 myTime = time.time_ns()
 myDict = {}
@@ -16,7 +17,6 @@ MASTER_PORT = None
 
 
 class Role(Enum):
-    # Assign the role to the server
     MASTER = "master"
     SLAVE = "slave"
    
@@ -112,82 +112,133 @@ class Redis:
                 target=handle_connection_res, args=(conn, addr,info)
             )
             client_thread.start()
-        
 
-
-
-
-        # self.info = info
-        # self.server_socket = socket.create_server(("localhost", info.port))
-        # print("server is running on port ",info.port)
-        # Raplica = RaplicaHandler(info)
-        # Raplica.start_slave()
-        
-
-    # def server_up(self,socket,info):
-       
-
-        
-    
-        
-
-def getresponce(message):
+def getresponce(message,trailing = True):
     # This function will return the response to the client
     if len(message) == 0:
         return "$-1"+ CRFL
     else:
-        echoPattern = "$<len>\r\n<data>\r\n"
+        echoPattern = "$<len>\r\n<data>"
         echoPattern = echoPattern.replace("<len>", str(len(message)))
         echoPattern = echoPattern.replace("<data>", message)
-        return echoPattern
+
+        if trailing:
+            return echoPattern+"\r\n"
+        else:
+            return echoPattern
 
 def master_ping(info):
     sc = socket.socket()
     sc.connect((info.master_host, info.master_port))
 
+def ping(vecntor2 ,info,con):
+    # This function will handle the ping command
+    response = getresponce("PONG")
+    con.send(response.encode())
+def echo(vector2,info,con):
+    # This function will handle the echo command
+    response = getresponce(vector2[1] if len(vector2)>1 else "")
+    con.send(response.encode())
+def set(vector2,info,con):
+    # This function will handle the set command
+    global myDict
+    myDict = {vector2[1]: vector2[2]}
+    if len(vector2) > 4:
+        myDict["expiry"] = vector2[-1]
+        myDict["start"] = time.time_ns()
+        flag = True
+    response = getresponce("OK")
+    con.send(response.encode())
+
+def get(vector2,info,con):
+    # This function will handle the get command
+
+    global myDict
+    global flag
+    response = getresponce(myDict[vector2[1]])
+    con.send(response.encode())
+    if(flag):
+        if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
+            con.send(getresponce("").encode())
+def info(vector2,info,con):
+    # This function will handle the info command
+    print("this is the info section ")
+    response = f"role:{info.role.value}\r\n"
+    response += f"master_replid:{info.master_replid}\r\n"
+    response += f"master_repl_offset:{info.master_repl_offset}\r\n"
+    con.send(getresponce(response).encode())
+
+def replconf(vector2 ,info,con):
+    # This function will handle the replconf command
+    response = getresponce("OK")
+    con.send(response.encode())
+
+def psync(vector2,info,con):
+    # This function will handle the psync command
+    response = f"+FULLRESYNC {info.master_replid} {0}\r\n"
+    con.send(response.encode())
+
+    empy_file = "UkVESVMwMDEx+glyZWRpcy12ZXIFNy4yLjD6CnJlZGlzLWJpdHPAQPoFY3RpbWXCbQi8ZfoIdXNlZC1tZW3CsMQQAPoIYW9mLWJhc2XAAP/wbjv+wP9aog=="
+    binary_file = base64.b64decode(empy_file)
+    response = getresponce(binary_file)
+    con.send(response.encode())
 
 
-def command_checker(vector2,info):
+f_trigger = {
+    "ping": ping,
+    "echo": echo,
+    "set": set,
+    "get": get,
+    "info": info,
+    "replconf": replconf,
+    "psync": psync
+}
+
+def command_checker(vector2,info,con):
     global myDict
     global flag
     # This function will check the command
     command = vector2[0].lower()
-    if command == "ping":
-        response = getresponce("PONG")
-    elif command == "echo":
-        response = getresponce(vector2[1] if len(vector2)>1 else "")
-    elif command == "set": 
-        myDict = {vector2[1]: vector2[2]}
-        if len(vector2) > 4:
-            myDict["expiry"] = vector2[-1]
-            myDict["start"] = time.time_ns()
-            flag = True
-        response = getresponce("OK")
-    elif command == "get":
-        response = getresponce(myDict[vector2[1]])
-        if(flag):
-            if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
-                response = getresponce("")
-    elif command == "info":
-        print("this is the info section ")
-        response = f"role:{info.role.value}\r\n"
-        response += f"master_replid:{info.master_replid}\r\n"
-        response += f"master_repl_offset:{info.master_repl_offset}\r\n"
-        response = getresponce(response)
 
-    elif command == "replconf" or vector2[1] == "listening-port":
-        response = getresponce("OK")
-    elif command == "replconf" or vector2[1] == "capa":
-        response = getresponce("OK")
-    elif command == "psync":
-        response = f"+FULLRESYNC {info.master_replid} {0}\r\n"
-        # response = getresponce(response)
-    return response.encode()
+    if command in f_trigger:
+        f_trigger[command](vector2,info,con)
+    
+    # if command == "ping":
+    #     f_trigger()
+    # elif command == "echo":
+    #     response = getresponce(vector2[1] if len(vector2)>1 else "")
+    # elif command == "set": 
+    #     myDict = {vector2[1]: vector2[2]}
+    #     if len(vector2) > 4:
+    #         myDict["expiry"] = vector2[-1]
+    #         myDict["start"] = time.time_ns()
+    #         flag = True
+    #     response = getresponce("OK")
+    # elif command == "get":
+    #     response = getresponce(myDict[vector2[1]])
+    #     if(flag):
+    #         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
+    #             response = getresponce("")
+    # elif command == "info":
+    #     print("this is the info section ")
+    #     response = f"role:{info.role.value}\r\n"
+    #     response += f"master_replid:{info.master_replid}\r\n"
+    #     response += f"master_repl_offset:{info.master_repl_offset}\r\n"
+    #     response = getresponce(response)
+    # elif command == "replconf" or vector2[1] == "listening-port":
+    #     response = getresponce("OK")
+    # elif command == "replconf" or vector2[1] == "capa":
+    #     response = getresponce("OK")
+    # elif command == "psync":
+    #     response = f"+FULLRESYNC {info.master_replid} {0}\r\n"
+    #     # response = getresponce(response)
+    # return response.encode()
 
 def handle_connection_res(con , addr,info):
     # This function will handle the connection of the client with the server
     CRLF = "\r\n"
     print("Connected by ",addr)
+    checker = False
     with con:        
         while True:
             global myDict
@@ -204,7 +255,9 @@ def handle_connection_res(con , addr,info):
                         vector2.append(i)
                 if vector2 is None or len(vector2) == 0:
                     continue
-                con.send(command_checker(vector2,info))
+                command_checker(vector2,info,con)
+                if checker:
+                    con.send(getresponce())
 
                 
 
@@ -230,8 +283,7 @@ def main():
     info = InfoHandler(role=role,host=host,port=port,master_host=MASTER_HOST,master_port=MASTER_PORT)
     print("port value is ",port)
     print(MASTER_PORT)
-    redis = Redis(info)
-    redis.server_up()
+    Redis(info)
     # create the server socket   
     # wait for client 
 if __name__ == "__main__":
