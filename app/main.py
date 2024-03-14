@@ -142,6 +142,7 @@ def echo(vector2,info,con):
 def set(vector2,info,con):
     # This function will handle the set command
     global myDict
+    global flag
     myDict = {vector2[1]: vector2[2]}
     if len(vector2) > 4:
         myDict["expiry"] = vector2[-1]
