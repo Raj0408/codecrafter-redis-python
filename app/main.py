@@ -156,10 +156,11 @@ def get(vector2,info,con):
     global myDict
     global flag
     response = getresponce(myDict[vector2[1]])
-    con.send(response.encode())
     if(flag):
         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
             con.send(getresponce("").encode())
+    else:
+         con.send(response.encode())
 def info(vector2,info,con):
     # This function will handle the info command
     print("this is the info section ")
