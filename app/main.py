@@ -176,14 +176,12 @@ def replconf(vector2 ,info,con):
 
 def psync(vector2,info,con):
     # This function will handle the psync command
-    response1 = f"+FULLRESYNC {info.master_replid} {0}\r\n"
-
-
+    response = f"+FULLRESYNC {info.master_replid} {0}\r\n"
+    # con.send(response.encode())
     empy_file = "UkVESVMwMDEx+glyZWRpcy12ZXIFNy4yLjD6CnJlZGlzLWJpdHPAQPoFY3RpbWXCbQi8ZfoIdXNlZC1tZW3CsMQQAPoIYW9mLWJhc2XAAP/wbjv+wP9aog=="
     binary_file = base64.b64decode(empy_file)
-    response2 = getresponce(binary_file)
-    response = [response1,response2]
-    con.send(response1.encode())
+    response += getresponce(binary_file)
+    con.send(getresponce(response).encode())
 
 
 f_trigger = {
