@@ -118,12 +118,12 @@ def getresponce(message,trailing = True):
     if len(message) == 0:
         return "$-1"+ CRFL
     else:
-        echoPattern = b"$<len>\r\n<data>"
+        echoPattern = "$<len>\r\n<data>"
         echoPattern = echoPattern.replace("<len>", str(len(message)))
         echoPattern = echoPattern.replace("<data>", message)
 
         if trailing:
-            return echoPattern+b"\r\n"
+            return echoPattern+"\r\n"
         else:
             return echoPattern
 
