@@ -50,3 +50,36 @@ from enum import Enum, auto
             #          print("sending re")
 vector = "*1\r\n$4\r\nping\r\n".split("\r\n")
 print(vector)
+
+
+    
+    # if command == "ping":
+    #     f_trigger()
+    # elif command == "echo":
+    #     response = getresponce(vector2[1] if len(vector2)>1 else "")
+    # elif command == "set": 
+    #     myDict = {vector2[1]: vector2[2]}
+    #     if len(vector2) > 4:
+    #         myDict["expiry"] = vector2[-1]
+    #         myDict["start"] = time.time_ns()
+    #         flag = True
+    #     response = getresponce("OK")
+    # elif command == "get":
+    #     response = getresponce(myDict[vector2[1]])
+    #     if(flag):
+    #         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
+    #             response = getresponce("")
+    # elif command == "info":
+    #     print("this is the info section ")
+    #     response = f"role:{info.role.value}\r\n"
+    #     response += f"master_replid:{info.master_replid}\r\n"
+    #     response += f"master_repl_offset:{info.master_repl_offset}\r\n"
+    #     response = getresponce(response)
+    # elif command == "replconf" or vector2[1] == "listening-port":
+    #     response = getresponce("OK")
+    # elif command == "replconf" or vector2[1] == "capa":
+    #     response = getresponce("OK")
+    # elif command == "psync":
+    #     response = f"+FULLRESYNC {info.master_replid} {0}\r\n"
+    #     # response = getresponce(response)
+    # return response.encode()

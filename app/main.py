@@ -118,12 +118,12 @@ def getresponce(message,trailing = True):
     if len(message) == 0:
         return "$-1"+ CRFL
     else:
-        echoPattern = "$<len>\r\n<data>"
+        echoPattern = b"$<len>\r\n<data>"
         echoPattern = echoPattern.replace("<len>", str(len(message)))
         echoPattern = echoPattern.replace("<data>", message)
 
         if trailing:
-            return echoPattern+"\r\n"
+            return echoPattern+b"\r\n"
         else:
             return echoPattern
 
@@ -203,37 +203,6 @@ def command_checker(vector2,info,con):
 
     if command in f_trigger:
         f_trigger[command](vector2,info,con)
-    
-    # if command == "ping":
-    #     f_trigger()
-    # elif command == "echo":
-    #     response = getresponce(vector2[1] if len(vector2)>1 else "")
-    # elif command == "set": 
-    #     myDict = {vector2[1]: vector2[2]}
-    #     if len(vector2) > 4:
-    #         myDict["expiry"] = vector2[-1]
-    #         myDict["start"] = time.time_ns()
-    #         flag = True
-    #     response = getresponce("OK")
-    # elif command == "get":
-    #     response = getresponce(myDict[vector2[1]])
-    #     if(flag):
-    #         if (time.time_ns() - myDict["start"])* 10**-6 >= int(myDict["expiry"]):
-    #             response = getresponce("")
-    # elif command == "info":
-    #     print("this is the info section ")
-    #     response = f"role:{info.role.value}\r\n"
-    #     response += f"master_replid:{info.master_replid}\r\n"
-    #     response += f"master_repl_offset:{info.master_repl_offset}\r\n"
-    #     response = getresponce(response)
-    # elif command == "replconf" or vector2[1] == "listening-port":
-    #     response = getresponce("OK")
-    # elif command == "replconf" or vector2[1] == "capa":
-    #     response = getresponce("OK")
-    # elif command == "psync":
-    #     response = f"+FULLRESYNC {info.master_replid} {0}\r\n"
-    #     # response = getresponce(response)
-    # return response.encode()
 
 def handle_connection_res(con , addr,info):
     # This function will handle the connection of the client with the server
