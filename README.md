@@ -1,1 +1,4 @@
-complete clone of redis using python
+# Redis Clone #
+
+This is clone of redis using python using socket
+
